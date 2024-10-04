@@ -1,5 +1,6 @@
 [![](https://img.shields.io/pypi/pyversions/django-mail-analytics.svg?color=3776AB&logo=python&logoColor=white)](https://www.python.org/)
 [![](https://img.shields.io/pypi/djversions/django-mail-analytics?color=0C4B33&logo=django&logoColor=white&label=django)](https://www.djangoproject.com/)
+[![Published on Django Packages](https://img.shields.io/badge/Published%20on-Django%20Packages-0c3c26)](https://djangopackages.org/packages/p/django-mail-analytics/)
 
 [![](https://img.shields.io/pypi/v/django-mail-analytics.svg?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/django-mail-analytics/)
 [![](https://static.pepy.tech/badge/django-mail-analytics/month)](https://pepy.tech/project/django-mail-analytics)
