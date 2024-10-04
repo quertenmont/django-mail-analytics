@@ -68,11 +68,11 @@ def send(wrapped, instance, args, kwargs):
         mail, _ = Mail.objects.update_or_create(
             key=tracker or subject[:25],
             date=datetime.now().date(),
-            create_defaults=dict(
-                sender=from_email,
-                subject=subject[:2048],
-                body=html_message,
-            ),
+            create_defaults={
+                "sender": from_email,
+                "subject": subject[:2048],
+                "body": html_message,
+            },
         )
 
         mailRecipient, _ = MailRecipient.objects.update_or_create(
@@ -88,7 +88,7 @@ def send(wrapped, instance, args, kwargs):
 
     tracker = trackers[-1] if trackers else None
     if hasattr(instance, "alternatives"):
-        for I, x in enumerate(instance.alternatives):
+        for altI, x in enumerate(instance.alternatives):
             alternative, mime_type = x
             if mime_type == "text/html" and alternative:
                 html_message = alternative
@@ -109,7 +109,7 @@ def send(wrapped, instance, args, kwargs):
                     '''href="(.*?)"''', sub_replacor, html_message
                 )
 
-                instance.alternatives[I] = (html_message, mime_type)
+                instance.alternatives[altI] = (html_message, mime_type)
 
     return wrapped(*args, **kwargs)
 

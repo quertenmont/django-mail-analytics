@@ -94,7 +94,17 @@ class MailRecipientAdmin(admin.ModelAdmin):
     def clicks(self, instance):
         return instance.clicks
 
-    list_display = ("id", "created", "mail_key", "email", "rate", "opened", "sent", "openings", "clicks")
+    list_display = (
+        "id",
+        "created",
+        "mail_key",
+        "email",
+        "rate",
+        "opened",
+        "sent",
+        "openings",
+        "clicks",
+    )
     readonly_fields = (
         "id",
         "mail",
@@ -114,7 +124,9 @@ class MailAdmin(admin.ModelAdmin):
         hasAction = Q(recipients__actions__isnull=False)
 
         qs = super().get_queryset(request)
-        qs = qs.annotate(opened=Count("recipients", filter=hasAction & opening, distinct=True))
+        qs = qs.annotate(
+            opened=Count("recipients", filter=hasAction & opening, distinct=True)
+        )
         qs = qs.annotate(sent=Count("recipients", distinct=True))
         qs = qs.annotate(openings=Count("recipients__actions", filter=opening))
         qs = qs.annotate(clicks=Count("recipients__actions", filter=~opening))
@@ -152,7 +164,17 @@ class MailAdmin(admin.ModelAdmin):
         "body_html",
     )
 
-    list_display = ("id", "created", "key", "subject", "rate", "opened", "sent", "openings", "clicks")
+    list_display = (
+        "id",
+        "created",
+        "key",
+        "subject",
+        "rate",
+        "opened",
+        "sent",
+        "openings",
+        "clicks",
+    )
     inlines = [
         MailRecipientInline,
     ]

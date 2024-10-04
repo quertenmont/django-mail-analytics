@@ -1,8 +1,7 @@
-import math
 import re
-from datetime import datetime, timezone
+from datetime import datetime
 
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import User
 from django.core import mail
 from django.db.models.base import ModelBase
 from django.test import Client, TestCase
@@ -13,14 +12,14 @@ from django_mail_analytics.models import Mail, MailRecipient, MailRecipientActio
 
 def get_admin_change_view_url(obj: object) -> str:
     return reverse(
-        "admin:{}_{}_change".format(obj._meta.app_label, type(obj).__name__.lower()),
-        args=(obj.pk,),
+        "admin:{}_{}_change".format(obj._meta.app_label, type(obj).__name__.lower()),  # type: ignore
+        args=(obj.pk,),  # type: ignore
     )
 
 
 def get_admin_list_view_url(model: ModelBase) -> str:
     return reverse(
-        "admin:{}_{}_changelist".format(model._meta.app_label, model.__name__.lower()),
+        "admin:{}_{}_changelist".format(model._meta.app_label, model.__name__.lower()),  # type: ignore
     )
 
 
@@ -75,7 +74,8 @@ class MailTestCase(TestCase):
 
     def test_mail_pixel(self):
         """
-        Checking that there is a pixel link associated to the email and that it returns a pixel
+        Checking that there is a pixel link associated to the email
+        and that it returns a pixel
         """
         c = Client()
 

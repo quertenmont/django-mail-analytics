@@ -16,7 +16,9 @@ class Mail(models.Model):
 
 class MailRecipient(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
-    mail = models.ForeignKey(Mail, on_delete=models.CASCADE, null=False, related_name="recipients")
+    mail = models.ForeignKey(
+        Mail, on_delete=models.CASCADE, null=False, related_name="recipients"
+    )
     recipient = models.CharField(null=False, max_length=2048)
 
     def __str__(self):
@@ -37,7 +39,9 @@ class MailRecipient(models.Model):
 
 class MailRecipientAction(models.Model):
     id = models.AutoField(primary_key=True, auto_created=True)
-    recipient = models.ForeignKey(MailRecipient, on_delete=models.CASCADE, null=False, related_name="actions")
+    recipient = models.ForeignKey(
+        MailRecipient, on_delete=models.CASCADE, null=False, related_name="actions"
+    )
     created = models.DateTimeField(auto_now_add=True, editable=False)
     action = models.CharField(null=False, max_length=2048)
 
