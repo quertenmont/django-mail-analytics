@@ -1,0 +1,52 @@
+    <style type="text/css">
+tr:first-child > th {
+  border-bottom: 1px solid black;
+}
+{% comment %} tr:last-child > td {
+  border-bottom: 1px solid black;
+} {% endcomment %}
+    </style>
+
+
+
+<table width="100%" style="text-align:right; padding-inline:2em; border-spacing: 0.9em; ">
+  <tr width="100%">
+    <th>Date</th>
+    <th>Key</th>
+    <th>Subject</th>
+    <th>Success Rate</th>
+    <th>#Opened</th>
+    <th>#Openings</th>
+    <th>#Clicks</th>
+  </tr>
+{% for mail in page_obj %}
+  <tr>
+    <td>{{ mail.created }}</td>
+    <td>{{ mail.key|upper }}</td>
+    <td>{{ mail.subject }}</td>
+    <td>{{ mail.rate|stringformat:"d%%" }}</td>
+    <td>{{ mail.opened }} / {{ mail.sent }}</td>
+    <td>{{ mail.openings }}</td>
+    <td>{{ mail.clicks }}</td>
+  </tr>
+{% endfor %}
+</table>
+
+<br/>
+<div class="pagination" style="text-align:center;">
+  <span class="step-links">
+    {% if page_obj.has_previous %}
+    <a href="?page=1">&laquo; first</a>
+    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+    {% endif %}
+
+    <span class="current">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+    </span>
+
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">next</a>
+    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+    {% endif %}
+  </span>
+</div>

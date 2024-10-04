@@ -1,0 +1,89 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django-mail-analytics"
+description = "django package adding email tracking features.  Both email opening and link clicking are tracked."
+authors = [
+    { name = "Loic Quertenmont", email = "loic@deeperanalytics.be" },
+]
+keywords = [
+    "django",
+    "mail",
+    "analytics",
+    "tracking",
+    "tracker",
+    "python",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 5.0",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Build Tools",
+]
+dependencies = [
+]
+dynamic = ["version"]
+maintainers = [
+    { name = "Loic Quertenmont", email = "loic@deeperanalytics.be" },
+]
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.license]
+file = "LICENSE.txt"
+content-type = "text/plain"
+
+[project.urls]
+Homepage = "https://github.com/quertenmont/django-mail-analytics"
+Download = "https://github.com/quertenmont/django-mail-analytics/releases"
+Documentation = "https://github.com/quertenmont/django-mail-analytics#readme"
+Issues = "https://github.com/quertenmont/django-mail-analytics/issues"
+Funding = "https://github.com/sponsors/quertenmont/"
+Twitter = "https://twitter.com/LoicQuertenmont"
+
+[tool.black]
+line-length = 88
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | venv
+)/
+'''
+
+[tool.ruff]
+line-length = 88
+lint.ignore = []
+lint.select = ["B", "B9", "C", "E", "F", "W"]
+lint.mccabe.max-complexity = 10
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "test.settings"
+
+[tool.setuptools.packages.find]
+include = ["django_mail_analytics*"]
+
+[tool.setuptools.dynamic.version]
+attr = "django_mail_analytics.metadata.__version__"
