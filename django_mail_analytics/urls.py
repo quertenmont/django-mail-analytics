@@ -2,12 +2,12 @@
 This module define url patterns for this app
 """
 
-from django.urls import re_path
+from django.urls import path
 
 from . import views
 
 urlpatterns = [
-    re_path(r"^i$", views.pixel, name="mail_pixel"),
-    re_path(r"^p$", views.proxy, name="mail_proxy"),
-    re_path(r"^l$", views.MailListView.as_view(), name="mail_list"),
+    path("i", views.pixel, name="mail_pixel"),
+    path("p", views.proxy, name="mail_proxy"),
+    path("l", views.MailListView.as_view(), name="mail_list"),
 ]

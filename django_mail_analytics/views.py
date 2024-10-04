@@ -37,7 +37,8 @@ async def proxy(request):
 async def pixel(request):
     q = request.GET.get("q", None)
 
-    # hardcode pixel value to save time, it never changes, use generate_pixel_bytes if you need to update
+    # hardcode pixel value to save time, it never changes, use generate_pixel_bytes
+    # if you need to update
     pixel_bytes = (
         b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06"
         b"\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\rIDATx\x9cc\xf8\xff\xff?\x03\x00"

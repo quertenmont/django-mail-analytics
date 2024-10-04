@@ -12,14 +12,14 @@ from django_mail_analytics.models import Mail, MailRecipient, MailRecipientActio
 
 def get_admin_change_view_url(obj: object) -> str:
     return reverse(
-        "admin:{}_{}_change".format(obj._meta.app_label, type(obj).__name__.lower()),  # type: ignore
+        f"admin:{obj._meta.app_label}_{type(obj).__name__.lower()}_change",  # type: ignore
         args=(obj.pk,),  # type: ignore
     )
 
 
 def get_admin_list_view_url(model: ModelBase) -> str:
     return reverse(
-        "admin:{}_{}_changelist".format(model._meta.app_label, model.__name__.lower()),  # type: ignore
+        f"admin:{model._meta.app_label}_{model.__name__.lower()}_changelist",  # type: ignore
     )
 
 
