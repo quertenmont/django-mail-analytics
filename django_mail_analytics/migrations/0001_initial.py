@@ -5,40 +5,67 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Mail',
+            name="Mail",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False)),
-                ('key', models.CharField(db_index=True, max_length=128)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('sender', models.CharField(max_length=2048, null=True)),
-                ('subject', models.CharField(max_length=2048, null=True)),
-                ('body', models.TextField(blank=True, null=True)),
-                ('date', models.DateField(editable=False)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False
+                    ),
+                ),
+                ("key", models.CharField(db_index=True, max_length=128)),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("sender", models.CharField(max_length=2048, null=True)),
+                ("subject", models.CharField(max_length=2048, null=True)),
+                ("body", models.TextField(blank=True, null=True)),
+                ("date", models.DateField(editable=False)),
             ],
         ),
         migrations.CreateModel(
-            name='MailRecipient',
+            name="MailRecipient",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False)),
-                ('recipient', models.CharField(max_length=2048)),
-                ('mail', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='recipients', to='django_mail_analytics.mail')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False
+                    ),
+                ),
+                ("recipient", models.CharField(max_length=2048)),
+                (
+                    "mail",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="recipients",
+                        to="django_mail_analytics.mail",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='MailRecipientAction',
+            name="MailRecipientAction",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('action', models.CharField(max_length=2048)),
-                ('recipient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='actions', to='django_mail_analytics.mailrecipient')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("action", models.CharField(max_length=2048)),
+                (
+                    "recipient",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="actions",
+                        to="django_mail_analytics.mailrecipient",
+                    ),
+                ),
             ],
         ),
     ]

@@ -26,29 +26,6 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_DB: postgres
-
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
-    env:
-      POSTGRES_DATABASE: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_SERVICE_HOST: localhost
-      POSTGRES_SERVICE_PORT: 5432 #${{ job.services.postgres.ports[5432] }}
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -77,32 +54,8 @@ jobs:
       fail-fast: false
       matrix:
         include: ${{fromJson(needs.prepare.outputs.matrix)}}
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_DB: postgres
-
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
-
-    env:
-      POSTGRES_DATABASE: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_SERVICE_HOST: localhost
-      POSTGRES_SERVICE_PORT: 5432 #${{ job.services.postgres.ports[5432] }}
 
     steps:
-
     - uses: actions/checkout@v4
 
     - name: Set up Python ${{ matrix.python-version }}
