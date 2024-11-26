@@ -5,6 +5,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db.models import Count, F, Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView
+from html import unescape
 
 from .mail import mail_settings, register_action
 from .models import Mail
@@ -30,6 +31,7 @@ async def proxy(request):
         domain = mail_settings()["DOMAIN"]
         HttpResponseRedirect(f"{scheme}://{domain}/")
 
+    url = unescape(url)
     await register_action(q, url)
     return HttpResponseRedirect(url)
 
