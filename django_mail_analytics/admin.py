@@ -76,7 +76,7 @@ class MailRecipientAdmin(admin.ModelAdmin):
 
     @admin.display(description="Success Rate")
     def rate(self, instance):
-        return f"{int(100*(instance.opened/instance.sent))}%"
+        return f"{int(100 * (instance.opened / instance.sent))}%"
 
     @admin.display(description="Opened")
     def opened(self, instance):
@@ -137,7 +137,7 @@ class MailAdmin(admin.ModelAdmin):
 
     @admin.display(description="Success Rate")
     def rate(self, instance):
-        return f"{int(100*(instance.opened/instance.sent))}%"
+        return f"{int(100 * (instance.opened / instance.sent))}%"
 
     @admin.display(description="Opened")
     def opened(self, instance):
