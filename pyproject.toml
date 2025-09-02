@@ -70,11 +70,13 @@ exclude = '''
 )/
 '''
 
-[tool.ruff]
+[tool.ruff.lint]
 line-length = 88
-lint.ignore = []
-lint.select = ["B", "B9", "C", "E", "F", "W"]
-lint.mccabe.max-complexity = 10
+ignore = []
+select = ["B", "B9", "C", "E", "F", "W"]
+
+[tool.ruff.mccabe]
+max-complexity = 10
 
 [tool.mypy]
 plugins = ["mypy_django_plugin.main"]
