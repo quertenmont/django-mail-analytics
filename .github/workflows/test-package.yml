@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Create matrix
-        uses: fabiocaccamo/create-matrix-action@v5
+        uses: fabiocaccamo/create-matrix-action@v6
         id: create_matrix
         with:
           matrix: |
@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
 
     - name: Set up Python
       uses: actions/setup-python@v6
@@ -56,7 +56,7 @@ jobs:
         include: ${{fromJson(needs.prepare.outputs.matrix)}}
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
