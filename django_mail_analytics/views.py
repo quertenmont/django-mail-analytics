@@ -6,6 +6,7 @@ from django.db.models import Count, F, Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView
 from html import unescape
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from .mail import mail_settings, register_action
 from .models import Mail
@@ -29,9 +30,20 @@ async def proxy(request):
     if not url:
         scheme = mail_settings()["SCHEME"]
         domain = mail_settings()["DOMAIN"]
-        HttpResponseRedirect(f"{scheme}://{domain}/")
+        return HttpResponseRedirect(f"{scheme}://{domain}/")
 
     url = unescape(url)
+
+    # Ensure the redirect target is safe (same host / allowed scheme).
+    if not url_has_allowed_host_and_scheme(
+        url=url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        scheme = mail_settings()["SCHEME"]
+        domain = mail_settings()["DOMAIN"]
+        return HttpResponseRedirect(f"{scheme}://{domain}/")
+
     await register_action(q, url)
     return HttpResponseRedirect(url)
 
