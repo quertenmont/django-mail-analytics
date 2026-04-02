@@ -1,12 +1,13 @@
 # Create your views here.
 
 
+from urllib.parse import urlparse
+
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db.models import Count, F, Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView
 from html import unescape
-from django.utils.http import url_has_allowed_host_and_scheme
 
 from .mail import mail_settings, register_action
 from .models import Mail
@@ -34,12 +35,12 @@ async def proxy(request):
 
     url = unescape(url)
 
-    # Ensure the redirect target is safe (same host / allowed scheme).
-    if not url_has_allowed_host_and_scheme(
-        url=url,
-        allowed_hosts={request.get_host()},
-        require_https=request.is_secure(),
-    ):
+    # This proxy view intentionally redirects to external URLs for click-tracking
+    # purposes. Validate that the target URL uses a safe scheme (http or https
+    # only) to prevent open-redirect abuse via dangerous schemes (e.g.
+    # javascript: or data:).
+    parsed = urlparse(url)
+    if not parsed.scheme or parsed.scheme not in ("http", "https"):
         scheme = mail_settings()["SCHEME"]
         domain = mail_settings()["DOMAIN"]
         return HttpResponseRedirect(f"{scheme}://{domain}/")
