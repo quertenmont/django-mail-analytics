@@ -6,6 +6,7 @@ from functools import cache
 
 import wrapt
 from django.conf import settings
+from django.core.mail.message import EmailAlternative as _EmailAlternative
 from django.urls import reverse
 from django.utils.http import urlencode
 from hashids import Hashids
@@ -109,7 +110,7 @@ def send(wrapped, instance, args, kwargs):
                     '''href="(.*?)"''', sub_replacor, html_message
                 )
 
-                instance.alternatives[altI] = (html_message, mime_type)
+                instance.alternatives[altI] = _EmailAlternative(html_message, mime_type)
 
     return wrapped(*args, **kwargs)
 
