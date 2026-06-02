@@ -7,23 +7,6 @@ on:
 
 jobs:
 
-  prepare:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Create matrix
-        uses: fabiocaccamo/create-matrix-action@v7
-        id: create_matrix
-        with:
-          matrix: |
-            python-version {3.11}, django-version {5.2}
-            python-version {3.12}, django-version {5.2, 6.0}
-
-    outputs:
-      matrix: ${{ steps.create_matrix.outputs.matrix }}
-
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -47,13 +30,17 @@ jobs:
         tox -e migrations
 
   test:
-
-    needs: prepare
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        include: ${{fromJson(needs.prepare.outputs.matrix)}}
+        include:
+          - python-version: "3.11"
+            django-version: "5.2"
+          - python-version: "3.12"
+            django-version: "5.2"
+          - python-version: "3.12"
+            django-version: "6.0"
 
     steps:
     - uses: actions/checkout@v6
