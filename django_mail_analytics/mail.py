@@ -45,8 +45,6 @@ def get_pixel_tag(q):
 def get_proxy_url(q, url):
     scheme = mail_settings()["SCHEME"]
     domain = mail_settings()["DOMAIN"]
-    if url.startswith(f"{scheme}://{domain}"):
-        url = url.replace(f"{scheme}://{domain}", "")
 
     uri = reverse("mail_proxy")
     qp = urlencode({"q": get_hasher().encode(q), "u": url})
