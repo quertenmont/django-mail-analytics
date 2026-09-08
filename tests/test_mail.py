@@ -214,7 +214,7 @@ class DisabledAnalyticsTestCase(TestCase):
     def test_no_pixel_injected(self):
         """When disabled, no pixel tag should be injected into the email."""
         html_body = self.get_html_body()
-        self.assertNotIn('<img src=', html_body)
+        self.assertNotIn("<img src=", html_body)
 
     def test_no_db_records(self):
         """When disabled, no Mail/MailRecipient records should be created."""
