@@ -64,19 +64,31 @@ def send(wrapped, instance, args, kwargs):
         from_email = instance.from_email
         recipient_list = instance.recipients()
 
-        mail, _ = Mail.objects.update_or_create(
-            key=tracker or subject[:25],
-            date=datetime.now().date(),
-            create_defaults={
-                "sender": from_email,
-                "subject": subject[:2048],
-                "body": html_message,
-            },
-        )
+        try:
+            mail, _ = Mail.objects.update_or_create(
+                key=tracker or subject[:25],
+                date=datetime.now().date(),
+                create_defaults={
+                    "sender": from_email,
+                    "subject": subject[:2048],
+                    "body": html_message,
+                },
+            )
+        except Mail.MultipleObjectsReturned:
+            mail = Mail.objects.filter(
+                key=tracker or subject[:25],
+                date=datetime.now().date(),
+            ).first()
 
-        mailRecipient, _ = MailRecipient.objects.update_or_create(
-            mail=mail, recipient=",".join(recipient_list)
-        )
+        try:
+            mailRecipient, _ = MailRecipient.objects.update_or_create(
+                mail=mail, recipient=",".join(recipient_list)
+            )
+        except MailRecipient.MultipleObjectsReturned:
+            mailRecipient = MailRecipient.objects.filter(
+                mail=mail, recipient=",".join(recipient_list)
+            ).first()
+
         return mail.id, mailRecipient.id
 
     mailId, mailRId = 0, 0
