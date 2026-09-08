@@ -109,9 +109,7 @@ def _inject_tracking(instance, tracker):
             def sub_replacor(href_match, mail_r_id=mail_r_id):
                 return replace_href_by_proxy(mail_r_id, href_match)
 
-            html_message, _ = re.subn(
-                '''href="(.*?)"''', sub_replacor, html_message
-            )
+            html_message, _ = re.subn('''href="(.*?)"''', sub_replacor, html_message)
 
             instance.alternatives[alt_i] = _EmailAlternative(html_message, mime_type)
 
@@ -119,9 +117,7 @@ def _inject_tracking(instance, tracker):
 @wrapt.patch_function_wrapper("django.core.mail", "EmailMessage.send")
 def send(wrapped, instance, args, kwargs):
     # check for tracker code from email recipent list
-    trackers = [
-        x.rsplit("@", 1)[0] for x in instance.to if x.lower().endswith("@dma")
-    ]
+    trackers = [x.rsplit("@", 1)[0] for x in instance.to if x.lower().endswith("@dma")]
     instance.to = [x for x in instance.to if not x.lower().endswith("@dma")]
 
     tracker = trackers[-1] if trackers else None

@@ -4,18 +4,17 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('django_mail_analytics', '0001_initial'),
+        ("django_mail_analytics", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='mail',
-            unique_together={('key', 'date')},
+            name="mail",
+            unique_together={("key", "date")},
         ),
         migrations.AlterUniqueTogether(
-            name='mailrecipient',
-            unique_together={('mail', 'recipient')},
+            name="mailrecipient",
+            unique_together={("mail", "recipient")},
         ),
     ]
