@@ -57,13 +57,12 @@ def replace_href_by_proxy(q, href_match):
     return f'href="{proxy}"'
 
 
-@wrapt.patch_function_wrapper("django.core.mail", "EmailMessage.send")
-def send(wrapped, instance, args, kwargs):
-    def get_mailId(instance, html_message, tracker):
-        subject = instance.subject
-        from_email = instance.from_email
-        recipient_list = instance.recipients()
+def _get_mail_id(instance, html_message, tracker):
+    subject = instance.subject
+    from_email = instance.from_email
+    recipient_list = instance.recipients()
 
+    try:
         mail, _ = Mail.objects.update_or_create(
             key=tracker or subject[:25],
             date=datetime.now().date(),
@@ -73,42 +72,62 @@ def send(wrapped, instance, args, kwargs):
                 "body": html_message,
             },
         )
+    except Mail.MultipleObjectsReturned:
+        mail = Mail.objects.filter(
+            key=tracker or subject[:25],
+            date=datetime.now().date(),
+        ).first()
 
-        mailRecipient, _ = MailRecipient.objects.update_or_create(
+    try:
+        mail_recipient, _ = MailRecipient.objects.update_or_create(
             mail=mail, recipient=",".join(recipient_list)
         )
-        return mail.id, mailRecipient.id
+    except MailRecipient.MultipleObjectsReturned:
+        mail_recipient = MailRecipient.objects.filter(
+            mail=mail, recipient=",".join(recipient_list)
+        ).first()
 
-    mailId, mailRId = 0, 0
+    return mail.id, mail_recipient.id
 
+
+def _inject_tracking(instance, tracker):
+    mail_id, mail_r_id = 0, 0
+    for alt_i, x in enumerate(instance.alternatives):
+        alternative, mime_type = x
+        if mime_type == "text/html" and alternative:
+            html_message = alternative
+
+            if not mail_id or not mail_r_id:
+                mail_id, mail_r_id = _get_mail_id(instance, html_message, tracker)
+
+            if "</body>" in html_message:
+                html_message = html_message.replace(
+                    "</body>", f"{get_pixel_tag(mail_r_id)}\n</body>"
+                )
+
+            # check if there tags with href attributes and replace them by a proxy
+            def sub_replacor(href_match, mail_r_id=mail_r_id):
+                return replace_href_by_proxy(mail_r_id, href_match)
+
+            html_message, _ = re.subn('''href="(.*?)"''', sub_replacor, html_message)
+
+            instance.alternatives[alt_i] = _EmailAlternative(html_message, mime_type)
+
+
+@wrapt.patch_function_wrapper("django.core.mail", "EmailMessage.send")
+def send(wrapped, instance, args, kwargs):
     # check for tracker code from email recipent list
     trackers = [x.rsplit("@", 1)[0] for x in instance.to if x.lower().endswith("@dma")]
     instance.to = [x for x in instance.to if not x.lower().endswith("@dma")]
 
     tracker = trackers[-1] if trackers else None
-    if hasattr(instance, "alternatives"):
-        for altI, x in enumerate(instance.alternatives):
-            alternative, mime_type = x
-            if mime_type == "text/html" and alternative:
-                html_message = alternative
-
-                if not mailId or not mailRId:
-                    mailId, mailRId = get_mailId(instance, html_message, tracker)
-
-                if "</body>" in html_message:
-                    html_message = html_message.replace(
-                        "</body>", f"{get_pixel_tag(mailRId)}\n</body>"
-                    )
-
-                # check if there tags with href attributes and replace them by a proxy
-                def sub_replacor(href_match, mailRId=mailRId):
-                    return replace_href_by_proxy(mailRId, href_match)
-
-                html_message, _ = re.subn(
-                    '''href="(.*?)"''', sub_replacor, html_message
-                )
-
-                instance.alternatives[altI] = _EmailAlternative(html_message, mime_type)
+    try:
+        if hasattr(instance, "alternatives"):
+            _inject_tracking(instance, tracker)
+    except Exception:
+        logger.exception(
+            "Failed to track email analytics; sending email without tracking"
+        )
 
     return wrapped(*args, **kwargs)
 
