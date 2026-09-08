@@ -23,6 +23,8 @@ def mail_settings() -> dict:
         default_settings["SALT"] = getattr(settings, "SECRET_KEY", "salt")
     if "LENGTH" not in default_settings:
         default_settings["LENGTH"] = 6
+    if "ENABLED" not in default_settings:
+        default_settings["ENABLED"] = True
     return default_settings
 
 
@@ -121,13 +123,14 @@ def send(wrapped, instance, args, kwargs):
     instance.to = [x for x in instance.to if not x.lower().endswith("@dma")]
 
     tracker = trackers[-1] if trackers else None
-    try:
-        if hasattr(instance, "alternatives"):
-            _inject_tracking(instance, tracker)
-    except Exception:
-        logger.exception(
-            "Failed to track email analytics; sending email without tracking"
-        )
+    if mail_settings().get("ENABLED", True):
+        try:
+            if hasattr(instance, "alternatives"):
+                _inject_tracking(instance, tracker)
+        except Exception:
+            logger.exception(
+                "Failed to track email analytics; sending email without tracking"
+            )
 
     return wrapped(*args, **kwargs)
 

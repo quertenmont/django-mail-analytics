@@ -45,7 +45,8 @@ async def proxy(request):
         domain = mail_settings()["DOMAIN"]
         return HttpResponseRedirect(f"{scheme}://{domain}/")
 
-    await register_action(q, url)
+    if mail_settings().get("ENABLED", True):
+        await register_action(q, url)
     return HttpResponseRedirect(url)
 
 
@@ -60,7 +61,8 @@ async def pixel(request):
         b"\x08\xfc\x02\xfe\xa7\x9a\xa0\xa0\x00\x00\x00\x00IEND\xaeB`\x82"
     )
 
-    await register_action(q)
+    if mail_settings().get("ENABLED", True):
+        await register_action(q)
     return HttpResponse(content=pixel_bytes, content_type="image/png")
 
 
