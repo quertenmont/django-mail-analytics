@@ -171,3 +171,66 @@ class MailTestCase(TestCase):
 
         response = c.get(reverse("mail_list"))
         self.assertEqual(response.status_code, 200)
+
+
+class DisabledAnalyticsTestCase(TestCase):
+    """Tests that when ENABLED=False, no tracking occurs."""
+
+    def setUp(self):
+        from django.test import override_settings
+        from django_mail_analytics.mail import mail_settings
+
+        mail_settings.cache_clear()
+        self.settings_override = override_settings(
+            MAIL_ANALYTICS={
+                "DOMAIN": "localhost",
+                "SCHEME": "http",
+                "LENGTH": 6,
+                "ENABLED": False,
+            }
+        )
+        self.settings_override.enable()
+        mail_settings.cache_clear()
+
+        mail.send_mail(
+            "Subject disabled",
+            "Message body.",
+            "from@example.com",
+            ["to@example.com"],
+            fail_silently=False,
+            html_message="<body><a href='https://google.com'>link</a></body>",
+        )
+
+    def tearDown(self):
+        from django_mail_analytics.mail import mail_settings
+
+        mail.outbox = []
+        self.settings_override.disable()
+        mail_settings.cache_clear()
+
+    def get_html_body(self):
+        return getattr(mail.outbox[0], "alternatives", [("", None)])[0][0]
+
+    def test_no_pixel_injected(self):
+        """When disabled, no pixel tag should be injected into the email."""
+        html_body = self.get_html_body()
+        self.assertNotIn("<img src=", html_body)
+
+    def test_no_db_records(self):
+        """When disabled, no Mail/MailRecipient records should be created."""
+        self.assertEqual(Mail.objects.count(), 0)
+        self.assertEqual(MailRecipient.objects.count(), 0)
+
+    def test_pixel_view_no_action(self):
+        """Pixel view should return 200 but not register any action."""
+        c = Client()
+        response = c.get(reverse("mail_pixel") + "?q=abc123")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(MailRecipientAction.objects.count(), 0)
+
+    def test_proxy_view_no_action(self):
+        """Proxy view should redirect but not register any action."""
+        c = Client()
+        response = c.get(reverse("mail_proxy") + "?q=abc123&u=https://google.com")
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(MailRecipientAction.objects.count(), 0)
