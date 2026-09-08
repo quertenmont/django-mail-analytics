@@ -86,29 +86,32 @@ def send(wrapped, instance, args, kwargs):
     instance.to = [x for x in instance.to if not x.lower().endswith("@dma")]
 
     tracker = trackers[-1] if trackers else None
-    if hasattr(instance, "alternatives"):
-        for altI, x in enumerate(instance.alternatives):
-            alternative, mime_type = x
-            if mime_type == "text/html" and alternative:
-                html_message = alternative
+    try:
+        if hasattr(instance, "alternatives"):
+            for altI, x in enumerate(instance.alternatives):
+                alternative, mime_type = x
+                if mime_type == "text/html" and alternative:
+                    html_message = alternative
 
-                if not mailId or not mailRId:
-                    mailId, mailRId = get_mailId(instance, html_message, tracker)
+                    if not mailId or not mailRId:
+                        mailId, mailRId = get_mailId(instance, html_message, tracker)
 
-                if "</body>" in html_message:
-                    html_message = html_message.replace(
-                        "</body>", f"{get_pixel_tag(mailRId)}\n</body>"
+                    if "</body>" in html_message:
+                        html_message = html_message.replace(
+                            "</body>", f"{get_pixel_tag(mailRId)}\n</body>"
+                        )
+
+                    # check if there tags with href attributes and replace them by a proxy
+                    def sub_replacor(href_match, mailRId=mailRId):
+                        return replace_href_by_proxy(mailRId, href_match)
+
+                    html_message, _ = re.subn(
+                        '''href="(.*?)"''', sub_replacor, html_message
                     )
 
-                # check if there tags with href attributes and replace them by a proxy
-                def sub_replacor(href_match, mailRId=mailRId):
-                    return replace_href_by_proxy(mailRId, href_match)
-
-                html_message, _ = re.subn(
-                    '''href="(.*?)"''', sub_replacor, html_message
-                )
-
-                instance.alternatives[altI] = _EmailAlternative(html_message, mime_type)
+                    instance.alternatives[altI] = _EmailAlternative(html_message, mime_type)
+    except Exception:
+        logging.exception("Failed to track email analytics; sending email without tracking")
 
     return wrapped(*args, **kwargs)
 
