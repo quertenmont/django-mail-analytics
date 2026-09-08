@@ -10,9 +10,6 @@ class Mail(models.Model):
     subject = models.CharField(null=True, max_length=2048)  # noqa: DJ001
     body = models.TextField(null=True, blank=True)  # noqa: DJ001
 
-    class Meta:
-        unique_together = [("key", "date")]
-
     def __str__(self):
         return f"Mail-{self.pk}"
 
@@ -23,9 +20,6 @@ class MailRecipient(models.Model):
         Mail, on_delete=models.CASCADE, null=False, related_name="recipients"
     )
     recipient = models.CharField(null=False, max_length=2048)
-
-    class Meta:
-        unique_together = [("mail", "recipient")]
 
     def __str__(self):
         return f"MailRecipient-{self.pk}"
