@@ -3,6 +3,9 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/"
+    # Only bump a range when the new version falls outside it,
+    # so the minimum supported Django version is never raised.
+    versioning-strategy: increase-if-necessary
     schedule:
       interval: "monthly"
     open-pull-requests-limit: 100
